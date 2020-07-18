@@ -722,17 +722,17 @@ def construct_QCC_ansatz(entanglers, layer: int = 0):
 
 
 def minimize_E_random_guesses(objective, method, tol, n):
-    sample_energies = np.zeros(n)
+    sample_energies = []
 
     vars = objective.extract_variables()
 
     for t in range(n):
         initial_values = {v: np.random.uniform(0, 2 * np.pi) for v in vars}
-        result = minimize(objective=objective, method=method, initial_values=initial_values, tol=tol, silent=True)
-        E_t = result.energy
-        sample_energies[t] = E_t
+        result = minimize(objective=objective, method=method, initial_values=initial_values, tol=tol, silent=True, maxiter=250)
+        E_t = result
+        sample_energies.append(E_t)
 
-    return min(sample_energies)
+    return min(sample_energies, key=lambda x: x.energy)
 
 
 def init_qcc_params(hf_occ, variables):
